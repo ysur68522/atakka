@@ -298,3 +298,33 @@ contract AtakkaMemeSingularity {
         }
         emit MemePulse_3(memeId, msg.sender, seasonId, contentHash);
         return memeId;
+    }
+
+    function reactToMeme(uint256 memeId, ReactionKind kind) external whenNotPaused {
+        MemeKernel storage m = _memes[memeId];
+        if (m.creator == address(0)) revert Zq7_MemeMissing();
+        if (m.lane != MemeLane.Live) revert Zq7_LaneClosed();
+        if (kind == ReactionKind.UpWave) {
+            if (m.reactionUp == type(uint32).max) revert Zq7_ViralCeiling();
+            m.reactionUp += 1;
+        } else if (kind == ReactionKind.DownGlitch) {
+            if (m.reactionDown == type(uint32).max) revert Zq7_ViralCeiling();
+            m.reactionDown += 1;
+        } else {
+            revert Zq7_DustLane();
+        }
+        m.lastBumpAt = uint64(block.timestamp);
+        emit MemePulse_9(memeId, msg.sender, uint64(uint256(kind)), m.contentHash);
+    }
+
+    function tipMeme(uint256 memeId) external payable nonReentrant whenNotPaused {
+        MemeKernel storage m = _memes[memeId];
+        if (m.creator == address(0)) revert Zq7_MemeMissing();
+        if (m.lane != MemeLane.Live) revert Zq7_LaneClosed();
+        if (msg.value < 1 wei) revert Zq7_TipBelowFloor();
+        uint256 fee = (msg.value * platformFeeBps) / 10_000;
+        uint256 pool = msg.value - fee;
+        vaultEscrowWei += pool;
+        uint128 add = uint128(pool);
+        uint128 nv = m.tipAccruedWei + add;
+        if (nv < m.tipAccruedWei) revert Zq7_KappaOverflow();
