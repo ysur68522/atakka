@@ -358,3 +358,33 @@ contract AtakkaMemeSingularity {
         if (!okNet) {
             _profiles[msg.sender].pendingWithdrawWei += gross;
         }
+        emit MemePulse_41(memeId, msg.sender, uint64(gross), m.contentHash);
+    }
+
+    function withdrawPending() external nonReentrant {
+        uint128 amt = _profiles[msg.sender].pendingWithdrawWei;
+        if (amt == 0) revert Zq7_InertVault();
+        _profiles[msg.sender].pendingWithdrawWei = 0;
+        (bool ok, ) = msg.sender.call{value: amt}("");
+        if (!ok) revert Zq7_XferBlocked();
+    }
+
+    function sweepUntrackedWei(uint256 maxWei) external onlyOwner {
+        uint256 bal = address(this).balance;
+        if (bal <= vaultEscrowWei) revert Zq7_InertVault();
+        uint256 slip = bal - vaultEscrowWei;
+        if (slip == 0) revert Zq7_InertVault();
+        uint256 out = slip < maxWei ? slip : maxWei;
+        if (out == 0) revert Zq7_InertVault();
+        (bool ok, ) = ADDRESS_A.call{value: out}("");
+        if (!ok) revert Zq7_XferBlocked();
+    }
+
+    function latticePeek_0(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_0));
+    }
+    function latticePeek_1(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_1));
+    }
