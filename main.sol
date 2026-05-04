@@ -238,3 +238,33 @@ contract AtakkaMemeSingularity {
         maxDailySubmits = 64;
         submitCooldownSecs = 120;
         platformFeeBps = 250;
+        _reentrancy_status = 1;
+    }
+
+    receive() external payable {
+        vaultEscrowWei += msg.value;
+    }
+
+    function pausePlane(bool halted) external {
+        if (msg.sender != ADDRESS_C && msg.sender != ADDRESS_D && msg.sender != ownerKey)
+            revert Zq7_HaltSignal();
+        planePaused = halted;
+    }
+
+    function rotateOwner(address nextOwner) external onlyOwner {
+        if (nextOwner == address(0)) revert Zq7_ZoneVoid();
+        ownerKey = nextOwner;
+    }
+
+    function tuneCaps(uint32 dailyMax, uint32 cooldownSecs, uint16 feeBps) external onlyOwner {
+        if (dailyMax == 0 || dailyMax > 512) revert Zq7_BurstCap();
+        if (cooldownSecs > 86_400) revert Zq7_CooldownActive();
+        if (feeBps > 1_000) revert Zq7_KappaOverflow();
+        maxDailySubmits = dailyMax;
+        submitCooldownSecs = cooldownSecs;
+        platformFeeBps = feeBps;
+    }
+
+    function rollSeason(uint64 newEndsAt) external onlyOwner {
+        seasonId += 1;
+        seasonEndsAt = newEndsAt;
