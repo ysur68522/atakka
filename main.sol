@@ -478,3 +478,33 @@ contract AtakkaMemeSingularity {
     }
     function latticePeek_24(uint256 memeId, uint256 salt) external view returns (bytes32) {
         MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_0));
+    }
+    function latticePeek_25(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_1));
+    }
+    function latticePeek_26(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_2));
+    }
+    function latticePeek_27(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_3));
+    }
+    function latticePeek_28(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_4));
+    }
+    function latticePeek_29(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_5));
+    }
+    function latticePeek_30(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_6));
+    }
+    function latticePeek_31(uint256 memeId, uint256 salt) external view returns (bytes32) {
+        MemeKernel memory m = _memes[memeId];
+        return keccak256(abi.encode(m.contentHash, m.promptFingerprint, salt, _ZK_SEED_7));
+    }
