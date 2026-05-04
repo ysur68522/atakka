@@ -178,3 +178,33 @@ contract AtakkaMemeSingularity {
         uint64 memeNonce;
     }
 
+    address public immutable ADDRESS_A;
+    address public immutable ADDRESS_B;
+    address public immutable ADDRESS_C;
+    address public immutable ADDRESS_D;
+    address public immutable ADDRESS_E;
+
+    bytes32 private constant _ZK_SEED_0 = 0xefe31e22e81191d30c186851856fc136058ffde616ee7c77597a54f1e9184d58;
+    bytes32 private constant _ZK_SEED_1 = 0x55a81ead0af252a2c82a9c169a7f099dbecf9daea0d68e0f7c9127665c623909;
+    bytes32 private constant _ZK_SEED_2 = 0xa4177631be2b23c59c20b74f5ed3ce5e2db47d99bcfa6947d8e989ec1b3b91f0;
+    bytes32 private constant _ZK_SEED_3 = 0x561d36782e9d20b54f53798a163905951688140f7c5359cdadfdcd2a1d2b5d01;
+    bytes32 private constant _ZK_SEED_4 = 0x84d5d8d6ba356fd100bde7cf2163594d1794930002083a7d17bb7a8b3914c044;
+    bytes32 private constant _ZK_SEED_5 = 0x42bd9c4ff6cd3eca6f32f6fb85a183fff8e1f49b14a2e47a14bad93e56f8d5c3;
+    bytes32 private constant _ZK_SEED_6 = 0xa7760078fed4b21b1a998c424768956d266164625027c69b47211430d9f0e12c;
+    bytes32 private constant _ZK_SEED_7 = 0xfe3eb2b2b2f1e4cc401ee4ea615a66ae7eccdd6594c5568f0ed2076c56a5b2f0;
+
+    address public ownerKey;
+    bool public planePaused;
+    uint64 public seasonId;
+    uint64 public seasonEndsAt;
+    uint32 public maxDailySubmits;
+    uint32 public submitCooldownSecs;
+    uint16 public platformFeeBps;
+    uint256 public memeCount;
+    uint256 public vaultEscrowWei;
+
+    mapping(uint256 => MemeKernel) private _memes;
+    mapping(address => ProfilePulse) private _profiles;
+    mapping(bytes32 => uint256) private _fingerprintToMeme;
+    mapping(address => uint256) private _withdrawNonce;
+    uint256 private _reentrancy_status;
