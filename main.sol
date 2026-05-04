@@ -328,3 +328,33 @@ contract AtakkaMemeSingularity {
         uint128 add = uint128(pool);
         uint128 nv = m.tipAccruedWei + add;
         if (nv < m.tipAccruedWei) revert Zq7_KappaOverflow();
+        m.tipAccruedWei = nv;
+        if (fee > 0) {
+            (bool okFee, ) = ADDRESS_A.call{value: fee}("");
+            if (!okFee) revert Zq7_XferBlocked();
+        }
+        emit MemePulse_17(memeId, msg.sender, uint64(msg.value), m.promptFingerprint);
+    }
+
+    function markLane(uint256 memeId, MemeLane lane, bytes32 modHash) external {
+        if (msg.sender != ADDRESS_B && msg.sender != ADDRESS_E && msg.sender != ownerKey)
+            revert Zq7_UnauthorizedSynth();
+        MemeKernel storage m = _memes[memeId];
+        if (m.creator == address(0)) revert Zq7_MemeMissing();
+        m.lane = lane;
+        m.moderationHash = modHash;
+        emit MemePulse_29(memeId, msg.sender, uint64(uint256(lane)), modHash);
+    }
+
+    function claimCreatorShare(uint256 memeId) external nonReentrant {
+        MemeKernel storage m = _memes[memeId];
+        if (m.creator != msg.sender) revert Zq7_AxisDenied();
+        uint128 gross = m.tipAccruedWei;
+        if (gross == 0) revert Zq7_InertVault();
+        m.tipAccruedWei = 0;
+        if (vaultEscrowWei < uint256(gross)) revert Zq7_YieldUnderflow();
+        vaultEscrowWei -= uint256(gross);
+        (bool okNet, ) = msg.sender.call{value: gross}("");
+        if (!okNet) {
+            _profiles[msg.sender].pendingWithdrawWei += gross;
+        }
