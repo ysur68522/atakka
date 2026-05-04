@@ -208,3 +208,33 @@ contract AtakkaMemeSingularity {
     mapping(bytes32 => uint256) private _fingerprintToMeme;
     mapping(address => uint256) private _withdrawNonce;
     uint256 private _reentrancy_status;
+
+    modifier nonReentrant() {
+        if (_reentrancy_status == 2) revert Zq7_RelayMismatch();
+        _reentrancy_status = 2;
+        _;
+        _reentrancy_status = 1;
+    }
+
+    modifier onlyOwner() {
+        if (msg.sender != ownerKey) revert Zq7_AxisDenied();
+        _;
+    }
+
+    modifier whenNotPaused() {
+        if (planePaused) revert Zq7_PausedPlane();
+        _;
+    }
+
+    constructor() {
+        ADDRESS_A = 0xA5da17b90D69F7d2bc74cE733B4AcB96eE2dd9A4;
+        ADDRESS_B = 0x1d9aDCEf1f6a380605A207fcdEc77aA844Da494a;
+        ADDRESS_C = 0xeD7a6c236f41ED20FA0556883fe1DC5BeE665564;
+        ADDRESS_D = 0x2cBF392907d9F498F64757F4B403Caab33BcE806;
+        ADDRESS_E = 0xD44Cf81d93f3A6A0332a13F297d1a1C1A6872f71;
+        ownerKey = msg.sender;
+        seasonId = 1;
+        seasonEndsAt = uint64(block.timestamp + 365 days);
+        maxDailySubmits = 64;
+        submitCooldownSecs = 120;
+        platformFeeBps = 250;
