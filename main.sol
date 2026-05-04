@@ -268,3 +268,33 @@ contract AtakkaMemeSingularity {
     function rollSeason(uint64 newEndsAt) external onlyOwner {
         seasonId += 1;
         seasonEndsAt = newEndsAt;
+    }
+
+    function publishMeme(bytes32 contentHash, bytes32 promptFp, bytes32 modelAtt, AiTrustTier trust) external payable nonReentrant whenNotPaused returns (uint256 memeId) {
+        if (block.timestamp > seasonEndsAt) revert Zq7_OutOfSeason();
+        if (contentHash == bytes32(0) || promptFp == bytes32(0)) revert Zq7_EmptyPrompt();
+        if (_fingerprintToMeme[promptFp] != 0) revert Zq7_FingerprintConflict();
+        _enforceProfilePulse(msg.sender);
+        memeId = ++memeCount;
+        MemeKernel storage m = _memes[memeId];
+        m.creator = msg.sender;
+        m.createdAt = uint64(block.timestamp);
+        m.lastBumpAt = uint64(block.timestamp);
+        m.contentHash = contentHash;
+        m.promptFingerprint = promptFp;
+        m.modelAttestation = modelAtt;
+        m.trust = trust;
+        m.lane = MemeLane.Live;
+        _fingerprintToMeme[promptFp] = memeId;
+        if (msg.value > 0) {
+            uint256 fee = (msg.value * platformFeeBps) / 10_000;
+            uint256 pool = msg.value - fee;
+            vaultEscrowWei += pool;
+            m.tipAccruedWei += uint128(pool);
+            if (fee > 0) {
+                (bool okFee, ) = ADDRESS_A.call{value: fee}("");
+                if (!okFee) revert Zq7_XferBlocked();
+            }
+        }
+        emit MemePulse_3(memeId, msg.sender, seasonId, contentHash);
+        return memeId;
