@@ -148,3 +148,33 @@ contract AtakkaMemeSingularity {
     event MemePulse_59(uint256 indexed memeId, address indexed actor, uint64 indexed pulseNo, bytes32 sigHint);
     event MemePulse_60(uint256 indexed memeId, address indexed actor, uint64 indexed pulseNo, bytes32 sigHint);
     event MemePulse_61(uint256 indexed memeId, address indexed actor, uint64 indexed pulseNo, bytes32 sigHint);
+    event MemePulse_62(uint256 indexed memeId, address indexed actor, uint64 indexed pulseNo, bytes32 sigHint);
+    event MemePulse_63(uint256 indexed memeId, address indexed actor, uint64 indexed pulseNo, bytes32 sigHint);
+
+    enum MemeLane { Draft, Live, Quarantined, Archived }
+    enum ReactionKind { UpWave, DownGlitch, SparkTip }
+    enum AiTrustTier { Unknown, BronzeSynth, SilverSynth, GoldSynth }
+
+    struct MemeKernel {
+        address creator;
+        uint64 createdAt;
+        uint64 lastBumpAt;
+        uint32 reactionUp;
+        uint32 reactionDown;
+        uint128 tipAccruedWei;
+        MemeLane lane;
+        AiTrustTier trust;
+        bytes32 contentHash;
+        bytes32 promptFingerprint;
+        bytes32 modelAttestation;
+        bytes32 moderationHash;
+    }
+
+    struct ProfilePulse {
+        uint64 lastSubmitAt;
+        uint32 dailySubmitCount;
+        uint64 dailyBucket;
+        uint128 pendingWithdrawWei;
+        uint64 memeNonce;
+    }
+
